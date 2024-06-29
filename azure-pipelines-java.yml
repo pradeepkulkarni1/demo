@@ -1,0 +1,27 @@
+trigger:
+- main
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+steps:
+- task: JavaToolInstaller@0
+  inputs:
+    versionSpec: '8'
+  displayName: 'Install JDK 8'
+
+- script: |
+    javac HelloWorld.java
+    java HelloWorld
+  displayName: 'Compile and run HelloWorld.java'
+
+- task: Docker@2
+  inputs:
+    command: 'buildAndPush'
+    repository: '<your_dockerhub_username>/azure-devops-java-demo'
+    dockerfile: '**/Dockerfile'
+    containerRegistry: 'DockerHub'
+    tags: |
+      $(Build.BuildId)
+  displayName: 'Build and push Docker image'
+
